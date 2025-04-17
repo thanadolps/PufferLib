@@ -149,3 +149,8 @@ checkpoints/
 experiments/
 wandb/
 raylib/
+
+
+.qodo
+raylib-*
+c_advantage.c
