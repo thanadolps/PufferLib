@@ -15,7 +15,7 @@ import pufferlib.emulation
 import pufferlib.postprocess
 import pufferlib.wrappers
 
-def env_creator(name='SuperMarioBros-1-1-v2'):
+def env_creator(name='SuperMarioBros-1-1-v3'):
     return functools.partial(make, name)
 
 def make(name, buf=None, seed=None, render_mode='rgb_array', **kwargs):
@@ -26,7 +26,7 @@ def make(name, buf=None, seed=None, render_mode='rgb_array', **kwargs):
     env = shimmy.GymV21CompatibilityV0(env=env, render_mode=render_mode)
 
     # env = SkipWrapper(env, 4)
-    # env = MaxAndSkipObservation(env, skip=4)
+    env = MaxAndSkipObservation(env, skip=4)
     
     env = gymnasium.wrappers.GrayScaleObservation(env)
     env = pufferlib.postprocess.ResizeObservation(env)
