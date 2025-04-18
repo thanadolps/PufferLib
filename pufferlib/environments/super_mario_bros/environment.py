@@ -28,8 +28,8 @@ def make(name, buf=None, seed=None, render_mode='rgb_array', **kwargs):
     # env = SkipWrapper(env, 4)
     # env = MaxAndSkipObservation(env, skip=4)
     
-    env = pufferlib.postprocess.ResizeObservation(env)
     env = gymnasium.wrappers.GrayScaleObservation(env)
+    env = pufferlib.postprocess.ResizeObservation(env)
     env = ExpandDimObservation(env)
 
     # env = RenderObservation(env) # for debugging
