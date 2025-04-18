@@ -235,6 +235,13 @@ environments = {
     'vizdoom': [
         'vizdoom==1.2.3',
     ],
+
+
+    'super_mario_bros': [
+        f'gym=={GYM_VERSION}',
+        f'gymnasium=={GYMNASIUM_VERSION}',
+        'gym-super-mario-bros'
+    ]
 }
 
 

@@ -31,7 +31,7 @@ def make(name, buf=None, seed=None, render_mode='rgb_array'):
     env = pufferlib.postprocess.ResizeObservation(env)
     env = ExpandDimObservation(env)
 
-    env = RenderObservation(env) # for debugging
+    # env = RenderObservation(env) # for debugging
     env = pufferlib.postprocess.EpisodeStats(env)
     return pufferlib.emulation.GymnasiumPufferEnv(env=env, buf=buf)
 
