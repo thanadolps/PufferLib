@@ -17,7 +17,7 @@ import pufferlib.wrappers
 def env_creator(name='SuperMarioBros-1-1-v2'):
     return functools.partial(make, name)
 
-def make(name, buf=None, seed=None, render_mode='rgb_array'):
+def make(name, buf=None, seed=None, render_mode='rgb_array', **kwargs):
     '''Super Mario Bros'''
     env = gym_super_mario_bros.make(name)
     env = JoypadSpace(env, SIMPLE_MOVEMENT)
@@ -82,7 +82,7 @@ class RenderObservation(gymnasium.ObservationWrapper):
 #         total_reward = 0
 #         current_step = 0
 #         while current_step < (self.repeat_count + 1) and not done:
-#             self.stepcount += 1
+#             self.stepcount += 1s
 #             obs, reward, done, info = self.env.step(action)
 #             total_reward += reward
 #             current_step += 1
@@ -92,4 +92,3 @@ class RenderObservation(gymnasium.ObservationWrapper):
 #     def reset(self, seed=None, options=None):
 #         self.stepcount = 0
 #         return self.env.reset(seed=seed, options=options)
-
