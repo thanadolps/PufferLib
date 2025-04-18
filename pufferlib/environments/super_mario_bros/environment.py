@@ -24,9 +24,8 @@ def make(name, buf=None, seed=None, render_mode='rgb_array', **kwargs):
     # env = pufferlib.wrappers.GymToGymnasium(env)
     env = shimmy.GymV21CompatibilityV0(env=env, render_mode=render_mode)
 
-    # env = SkipWrapper(env, 4)
+    env = SkipWrapper(env, 4)
     env = gymnasium.wrappers.GrayScaleObservation(env)
-
     
     env = pufferlib.postprocess.ResizeObservation(env)
     env = ExpandDimObservation(env)
@@ -67,28 +66,24 @@ class RenderObservation(gymnasium.ObservationWrapper):
         else:
             raise NotImplementedError()
         
-# class SkipWrapper(gymnasium.Wrapper):
-#     """
-#         Generic common frame skipping wrapper
-#         Will perform action for `x` additional steps
-#     """
-#     def __init__(self, env, repeat_count):
-#         super(SkipWrapper, self).__init__(env)
-#         self.repeat_count = repeat_count
-#         self.stepcount = 0
+class SkipWrapper(gymnasium.Wrapper):
+    def __init__(self, env, repeat_count):
+        super(SkipWrapper, self).__init__(env)
+        self.repeat_count = repeat_count
+        self.stepcount = 0
 
-#     def step(self, action):
-#         done = False
-#         total_reward = 0
-#         current_step = 0
-#         while current_step < (self.repeat_count + 1) and not done:
-#             self.stepcount += 1s
-#             obs, reward, done, info = self.env.step(action)
-#             total_reward += reward
-#             current_step += 1
+    def step(self, action):
+        done = False
+        total_reward = 0
+        current_step = 0
+        while current_step < (self.repeat_count + 1) and not done:
+            self.stepcount += 1
+            obs, reward, done, info = self.env.step(action)
+            total_reward += reward
+            current_step += 1
 
-#         return obs, total_reward, done, info
+        return obs, total_reward, done, info
 
-#     def reset(self, seed=None, options=None):
-#         self.stepcount = 0
-#         return self.env.reset(seed=seed, options=options)
+    def reset(self, seed=None, options=None):
+        self.stepcount = 0
+        return self.env.reset(seed=seed, options=options)
