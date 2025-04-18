@@ -26,6 +26,8 @@ def make(name, buf=None, seed=None, render_mode='rgb_array', **kwargs):
     env = shimmy.GymV21CompatibilityV0(env=env, render_mode=render_mode)
 
     # env = SkipWrapper(env, 4)
+
+    env = gymnasium.wrappers.TimeLimit(env, max_episode_steps=(400-326)*25)
     env = MaxAndSkipObservation(env, skip=4)
     
     env = gymnasium.wrappers.GrayScaleObservation(env)
