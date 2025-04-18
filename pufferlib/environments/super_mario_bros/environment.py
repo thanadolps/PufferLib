@@ -26,10 +26,10 @@ def make(name, buf=None, seed=None, render_mode='rgb_array', **kwargs):
     env = shimmy.GymV21CompatibilityV0(env=env, render_mode=render_mode)
 
     # env = SkipWrapper(env, 4)
-    env = MaxAndSkipObservation(env, skip=4)
-    env = gymnasium.wrappers.GrayScaleObservation(env)
+    # env = MaxAndSkipObservation(env, skip=4)
     
     env = pufferlib.postprocess.ResizeObservation(env)
+    env = gymnasium.wrappers.GrayScaleObservation(env)
     env = ExpandDimObservation(env)
 
     # env = RenderObservation(env) # for debugging
