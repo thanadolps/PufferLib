@@ -249,14 +249,14 @@ class Convolutional(nn.Module):
         actions, value = self.decode_actions(hidden, lookup)
         return actions, value
 
-    def encode_observations(self, observations):
+    def encode_observations(self, observations, state=None):
         if self.channels_last:
             observations = observations.permute(0, 3, 1, 2)
         if self.downsample > 1:
             observations = observations[:, :, ::self.downsample, ::self.downsample]
-        return self.network(observations.float() / 255.0), None
+        return self.network(observations.float() / 255.0)
 
-    def decode_actions(self, flat_hidden, lookup, concat=None):
+    def decode_actions(self, flat_hidden):
         action = self.actor(flat_hidden)
         value = self.value_fn(flat_hidden)
         return action, value
