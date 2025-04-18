@@ -1,6 +1,7 @@
 from pdb import set_trace as T
 
 import gymnasium
+import gymnasium as gym
 import functools
 from gymnasium.spaces import Box
 import shimmy
@@ -24,13 +25,15 @@ def make(name, buf=None, seed=None, render_mode='rgb_array', **kwargs):
     # env = pufferlib.wrappers.GymToGymnasium(env)
     env = shimmy.GymV21CompatibilityV0(env=env, render_mode=render_mode)
 
-    env = SkipWrapper(env, 4)
+    # env = SkipWrapper(env, 4)
+    env = MaxAndSkipObservation(env, skip=4)
     env = gymnasium.wrappers.GrayScaleObservation(env)
     
     env = pufferlib.postprocess.ResizeObservation(env)
     env = ExpandDimObservation(env)
 
-    # env = RenderObservation(env) # for debugging
+    env = RenderObservation(env) # for debugging
+
     env = pufferlib.postprocess.EpisodeStats(env)
     return pufferlib.emulation.GymnasiumPufferEnv(env=env, buf=buf)
 
@@ -87,3 +90,40 @@ class SkipWrapper(gymnasium.Wrapper):
     def reset(self, seed=None, options=None):
         self.stepcount = 0
         return self.env.reset(seed=seed, options=options)
+
+class MaxAndSkipObservation(gymnasium.Wrapper):
+    def __init__(self, env, skip: int = 4):
+        super().__init__(env)
+
+        if not np.issubdtype(type(skip), np.integer):
+            raise TypeError(
+                f"The skip is expected to be an integer, actual type: {type(skip)}"
+            )
+        if skip < 2:
+            raise ValueError(
+                f"The skip value needs to be equal or greater than two, actual value: {skip}"
+            )
+        if env.observation_space.shape is None:
+            raise ValueError("The observation space must have the shape attribute.")
+
+        self._skip = skip
+        self._obs_buffer = np.zeros(
+            (2, *env.observation_space.shape), dtype=env.observation_space.dtype
+        )
+
+    def step(self, action):
+        total_reward = 0.0
+        terminated = truncated = False
+        info = {}
+        for i in range(self._skip):
+            obs, reward, terminated, truncated, info = self.env.step(action)
+            if i == self._skip - 2:
+                self._obs_buffer[0] = obs
+            if i == self._skip - 1:
+                self._obs_buffer[1] = obs
+            total_reward += float(reward)
+            if terminated or truncated:
+                break
+        max_frame = np.max(self._obs_buffer, axis=0)
+
+        return max_frame, total_reward, terminated, truncated, info
