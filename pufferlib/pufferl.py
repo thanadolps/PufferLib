@@ -428,7 +428,7 @@ class PuffeRL:
         y_true = advantages.flatten() + self.values.flatten()
         var_y = y_true.var()
         explained_var = torch.nan if var_y == 0 else 1 - (y_true - y_pred).var() / var_y
-        losses['explained_variance'] = explained_var.item()
+        losses['explained_variance'] = explained_var if type(explained_var) is float else explained_var.item()
 
         profile.end()
         logs = None
@@ -863,6 +863,7 @@ class WandbLogger:
  
 def train(env_name, args=None, vecenv=None, policy=None, logger=None):
     args = args or load_config(env_name)
+    # args['mode'] = 'train'
     vecenv = vecenv or load_env(env_name, args)
     policy = policy or load_policy(args, vecenv)
 
@@ -925,6 +926,7 @@ def train(env_name, args=None, vecenv=None, policy=None, logger=None):
 
 def eval(env_name, args=None, vecenv=None, policy=None):
     args = args or load_config(env_name)
+    # args['mode'] = 'eval'
     args['vec'] = dict(backend='Serial', num_envs=1)
     vecenv = vecenv or load_env(env_name, args)
     if not isinstance(vecenv, pufferlib.vector.Serial):
@@ -1044,6 +1046,7 @@ def export(args=None, env_name=None, vecenv=None, policy=None):
     print(f'Saved {len(weights)} weights to {path}')
 
 def autotune(args=None, env_name=None, vecenv=None, policy=None):
+    args = args or load_config(env_name)
     package = args['package']
     module_name = 'pufferlib.ocean' if package == 'ocean' else f'pufferlib.environments.{package}'
     env_module = importlib.import_module(module_name)

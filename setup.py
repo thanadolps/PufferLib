@@ -329,6 +329,13 @@ environments = {
         'vizdoom==1.2.3',
         'stable_baselines3==2.1.0',
     ],
+    'smb': [
+        f'gym=={GYM_VERSION}',
+        f'gymnasium=={GYMNASIUM_VERSION}',
+        'stable_baselines3==2.1.0',
+        'gym-super-mario-bros==7.4.0',
+        'numpy<2.0.0' # https://stackoverflow.com/questions/78757000/overflowerror-when-setting-up-gym-super-mario-bros-environment-in-python-on-jupy
+    ]
 }
 
 docs = [
